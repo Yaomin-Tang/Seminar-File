@@ -214,22 +214,14 @@ The two methods also differ in what their guarantees demand of the parameters le
 
 The three studies that report timings do not agree on which approach is faster. Lilla et al.\ solve a network of ten prosumers over one day: the decomposed model required about 60\,s in 13 iterations and 80\,s in 8 iterations for its two stages, against about 1\,s per stage for the centralized model, and the authors state that the purpose is not computational performance but the reduction of shared information \cite{Lilla2020}. Diekerhof reports both signs within one thesis: at 10\,000 buildings solved for one scenario, the distributed computation took about 80\,s, almost three times faster than the centralized benchmark, but the order reverses when the same problem covers 27 scenarios and is still solved once \cite{Diekerhof2018}. Olivella-Rosell et al., with 100 sites, report the decomposed solve finishing in under five minutes where the centralized one exhausted 16\,GB of memory and needed about an hour \cite{OlivellaRosell2020}. The three differ in participant count, horizon, treatment of uncertainty, and hardware, so each figure is meaningful only within the study that measured it.
 
-% TODO before submission:
-% 1. Evidence paragraph written above; re-check the Lilla (60/80 s, 13/8 iterations,
-%    1 s centralized) and Diekerhof (14 buildings; 1716 s / 4947 iterations; 10 000
-%    buildings, 80 s, ~3x; 27 scenarios) figures against the sources before submission.
-% 2. Decide whether a fourth column for fully distributed (coordinator-free)
-%    variants is worth the space.
-% 3. Verify every cell against Section III once that section is drafted.
-% 4. Cite Table~\ref{tab:comparison} somewhere in Section IV once that text is final.
 
 \section{Conclusion}
 
-Three findings organise the comparison. First, the reviewed formulations differ little in what they optimise and much in what they place inside a participant's feasible set: once the day-ahead problem is written in a common template, the centralized solve, DD, and ADMM appear as three answers to the same coupling constraint, differing in what crosses the boundary---every cost function for the first, a price for the second, a corrected copy for the third.
+The comparison yields a choice rule rather than a ranking. Below about fifty prosumer sites the centralized solve is the cheaper option, and above that point the decomposition takes over, reaching a factor of five to twelve at a hundred sites \cite{OlivellaRosell2020}; at ten prosumers the gap runs the other way by two orders of magnitude, one second per stage against sixty to eighty \cite{Lilla2020}. The advantage is not monotone in size: Diekerhof obtains a reversal once the same problem covers 27 scenarios, since each iteration then carries a larger local subproblem \cite{Diekerhof2018}.
 
-Second, the reported timings do not settle which approach is faster. Lilla et al.\ give up two orders of magnitude in computation in order to reduce the information shared \cite{Lilla2020}; Olivella-Rosell et al.\ gain a factor of five to twelve at a hundred sites \cite{OlivellaRosell2020}; Diekerhof reports a reversal: almost three times faster than the centralized benchmark for a single-scenario problem over 10\,000 buildings, significantly slower once the same problem covers 27 scenarios \cite{Diekerhof2018}.
+Between the two decompositions the choice rests on what each can promise, not on speed. ADMM keeps every iterate on the coupling constraint and, for a convex problem, converges for any positive penalty parameter, so that parameter governs only the rate; in DD the step size enters the convergence condition itself, and the iterates satisfy the coupling only at convergence.
 
-Third, an optimum guarantee is a property of the model as much as of the algorithm. Where the device models contain binary decisions, no decomposition carries its guarantee, and what each remedy costs in feasibility, optimality, or attainable flexibility is not reported in a consistent form. Until the returned schedules are checked against the discrete constraints they are meant to satisfy, the practical applicability of a method has to be judged per setting.
+Neither promise survives binary device decisions. Where charging and discharging are mutually exclusive, no decomposition carries an optimum guarantee, and each remedy---convex relaxation, an exact local mixed-integer solve, or heuristic use---pays in feasibility, optimality, or attainable flexibility, with the price reported in no consistent form. What the reviewed studies also leave unmeasured is whether a returned schedule satisfies the discrete constraints it was meant to satisfy. Until that is checked, applicability must be judged per setting, and the rule above holds only within the premise under which the guarantee itself was stated.
 
 % When you add references, uncomment this block and replace the example
 % with actual references. Cite entries in the text using \cite{key}.
