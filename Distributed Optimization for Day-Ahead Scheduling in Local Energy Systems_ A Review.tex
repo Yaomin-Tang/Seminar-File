@@ -217,7 +217,7 @@ The three studies that report timings do not agree on which approach is faster. 
 
 \section{Conclusion}
 
-The comparison yields a choice rule rather than a ranking. Below about fifty prosumer sites the centralized solve is the cheaper option, and above that point the decomposition takes over, reaching a factor of five to twelve at a hundred sites \cite{OlivellaRosell2020}; at ten prosumers the gap runs the other way by two orders of magnitude, one second per stage against sixty to eighty \cite{Lilla2020}. The advantage is not monotone in size: Diekerhof obtains a reversal once the same problem covers 27 scenarios, since each iteration then carries a larger local subproblem \cite{Diekerhof2018}.
+The comparison yields a choice rule rather than a ranking. Below about fifty prosumer sites the centralized solve is the cheaper option, and above that point the decomposition takes over, reaching a factor of five to twelve at a hundred sites \cite{OlivellaRosell2020}; at ten prosumers the gap runs the other way by two orders of magnitude, about a second for the centralized model against 60\,s and 80\,s for the decomposed one, which solves two problems in sequence \cite{Lilla2020}. The advantage is not monotone in size: Diekerhof obtains a reversal once the same problem covers 27 scenarios, since each iteration then carries a larger local subproblem \cite{Diekerhof2018}.
 
 Between the two decompositions the choice rests on what each can promise, not on speed. ADMM keeps every iterate on the coupling constraint and, for a convex problem, converges for any positive penalty parameter, so that parameter governs only the rate; in DD the step size enters the convergence condition itself, and the iterates satisfy the coupling only at convergence.
 
