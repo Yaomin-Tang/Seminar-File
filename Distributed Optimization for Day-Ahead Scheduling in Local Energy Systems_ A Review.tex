@@ -78,34 +78,6 @@ Since $\mathcal{X}_i$ couples the periods within a day, the schedules that parti
 
 \section{Centralized and Distributed Optimization Approaches}
 
-\begin{table*}[!t]
-\centering
-\caption{Coordination properties of the three approaches, compiled from \cite{Diekerhof2018,OlivellaRosell2020}. The convergence guarantee is a property of the method \emph{under a stated premise}, not of the method alone.}
-\label{tab:comparison}
-\footnotesize
-\begin{tabular}{@{}p{0.17\textwidth}p{0.25\textwidth}p{0.25\textwidth}p{0.25\textwidth}@{}}
-\hline
- & Centralized & Dual decomposition & ADMM \\
-\hline
-Information reaching the coordinator
-& cost functions and device constraints of all participants
-& the schedule of each participant; returns one price for the coupling constraint
-& the schedules of all participants; returns a corrected copy to each \\
-Coordinator
-& none, a single solver
-& updates multipliers only
-& projects the copies onto the shared constraint \\
-Convergence guarantee
-& not applicable; one solver solves the problem as a whole
-& optimum if strong duality holds
-& convergence for convex formulations; none for nonconvex ones \\
-Binary device decisions
-& handled inside one solver
-& convex relaxation; otherwise no optimality guarantee
-& local mixed-integer solve, convex relaxation, or heuristic use; no convergence guarantee \\
-\hline
-\end{tabular}
-\end{table*}
 % Describe the selected approaches and the studies you compare.
 
 \subsection{Centralized Optimization}
@@ -184,7 +156,36 @@ a quadratic program whose cost grows with the number of scalar constraints---one
 \label{eq:admm-lambda}
 \end{equation}
 
-When every $A_i$ is the identity---that is, when the quantity exchanged is already the net exchange of participant $i$, with the device constraints absorbed in $\mathcal{X}_i$, as in all three studies reviewed here---the constraint reduces to a sum over participants and the projection to subtracting a common offset,
+\begin{table*}[!t]
+\centering
+\caption{Coordination properties of the three approaches, compiled from \cite{Diekerhof2018,OlivellaRosell2020}. The convergence guarantee is a property of the method \emph{under a stated premise}, not of the method alone.}
+\label{tab:comparison}
+\footnotesize
+\begin{tabular}{@{}p{0.17\textwidth}p{0.25\textwidth}p{0.25\textwidth}p{0.25\textwidth}@{}}
+\hline
+ & Centralized & Dual decomposition & ADMM \\
+\hline
+Information reaching the coordinator
+& cost functions and device constraints of all participants
+& the schedule of each participant; returns one price for the coupling constraint
+& the schedules of all participants; returns a corrected copy to each \\
+Coordinator
+& none, a single solver
+& updates multipliers only
+& projects the copies onto the shared constraint \\
+Convergence guarantee
+& not applicable; one solver solves the problem as a whole
+& optimum if strong duality holds
+& convergence for convex formulations; none for nonconvex ones \\
+Binary device decisions
+& handled inside one solver
+& convex relaxation; otherwise no optimality guarantee
+& local mixed-integer solve, convex relaxation, or heuristic use; no convergence guarantee \\
+\hline
+\end{tabular}
+\end{table*}
+
+When every $A_i$ is the identity---that is, when the quantity exchanged is already the net exchange of participant $i$, with the device constraints absorbed in $\mathcal{X}_i$, as in all three studies reviewed here---the coupling constraint collapses to $\sum_{i\in\mathcal{N}} z_i = b$, and the projection collapses to subtracting the same offset from every price-corrected schedule; \eqref{eq:admm-z} states the result explicitly.
 
 \begin{equation}
 z_i^{k+1} = x_i^{k+1} + \frac{\lambda_i^{k}}{\rho} - \frac{1}{N}\Big( \sum_{j\in\mathcal{N}} x_j^{k+1} + \frac{1}{\rho}\sum_{j\in\mathcal{N}} \lambda_j^{k} - b \Big),
@@ -202,7 +203,7 @@ Because the copies are projected onto the coupling constraint at every iteration
 % DRAFT: the three criteria are defined here so that the comparison below does not
 % rely on unstated notions of "better". Revise once Section III is written.
 
-The criteria used below are fixed before the studies are compared. \emph{Effectiveness} denotes whether a feasible schedule of comparable quality is obtained: whether the returned plan satisfies the coupling constraint and the discrete device constraints, and how far its cost lies from the centralized optimum. \emph{Scalability} denotes how the subproblem solved by each participant and the information exchanged per iteration grow with the number of participants, rather than wall-clock time, since timings obtained on different test systems are not comparable. \emph{Practical applicability} denotes the conditions a method imposes on the setting in which it is to run: which data must be shared, whether a coordinator is available, and whether the device models of the site can be cast in the form the method requires.
+The criteria used below are fixed before the studies are compared. \emph{Effectiveness} denotes whether a feasible schedule of comparable quality is obtained: whether the returned plan satisfies the coupling constraint and the discrete device constraints, and how far its cost lies from the centralized optimum. \emph{Scalability} denotes how the subproblem solved by each participant and the information exchanged per iteration grow with the number of participants, rather than wall-clock time, since timings obtained on different test systems are not comparable. \emph{Practical applicability} denotes the conditions a method imposes on the setting in which it is to run: which data must be shared, whether a coordinator is available, and whether the device models of the site can be cast in the form the method requires. Table~\ref{tab:comparison} collects the properties on which the three approaches differ.
 
 % TABLE SKELETON. Cells deliberately state only what the cited studies support;
 % leave a cell empty rather than filling it from general expectation.
@@ -223,7 +224,12 @@ The three studies that report timings do not agree on the sign of the comparison
 % 4. Cite Table~\ref{tab:comparison} somewhere in Section IV once that text is final.
 
 \section{Conclusion}
-% Summarize the main findings.
+
+Three findings organise the comparison. First, the reviewed formulations differ little in what they optimise and much in what they place inside a participant's feasible set: once the day-ahead problem is written in a common template, the centralized solve, dual decomposition, and ADMM appear as three answers to the same coupling constraint, differing in what crosses the boundary---every cost function for the first, a price for the second, a corrected copy for the third.
+
+Second, the reported timings do not settle which approach is faster. Lilla et al.\ give up two orders of magnitude in computation in order to reduce the information shared \cite{Lilla2020}; Olivella-Rosell et al.\ gain a factor of five to twelve at a hundred sites \cite{OlivellaRosell2020}; Diekerhof et al.\ report either sign depending on the number of scenarios resolved \cite{Diekerhof2018}. The sign of the comparison belongs to the setting rather than to the algorithm.
+
+Third, a convergence guarantee is a property of the model as much as of the algorithm. Where the device models contain binary decisions, no decomposition carries its guarantee, and what each remedy costs in feasibility, optimality, or attainable flexibility is not reported in a consistent form. Until the returned schedules are checked against the discrete constraints they are meant to satisfy, the practical applicability of a method has to be judged per setting.
 
 % When you add references, uncomment this block and replace the example
 % with actual references. Cite entries in the text using \cite{key}.
