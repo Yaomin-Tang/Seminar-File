@@ -86,7 +86,7 @@ A centralized formulation solves \eqref{eq:template} as a single problem, in whi
 
 \subsection{Dual Decomposition}
 
-Dual decomposition builds on the Lagrangian of \eqref{eq:template}. A multiplier $\lambda$ is introduced for the coupling constraint; it is common to all participants and admits the interpretation of a price for the coupled quantity. The resulting Lagrangian is
+DD builds on the Lagrangian of \eqref{eq:template}. A multiplier $\lambda$ is introduced for the coupling constraint; it is common to all participants and admits the interpretation of a price for the coupled quantity. The resulting Lagrangian is
 
 \begin{equation}
 L(\{x_i\},\lambda) = \sum_{i\in\mathcal{N}} \big[ f_i(x_i) + \lambda^{\top} A_i x_i \big] - \lambda^{\top} b ,
@@ -163,7 +163,7 @@ a quadratic program whose cost grows with the number of scalar constraints---one
 \footnotesize
 \begin{tabular}{@{}p{0.17\textwidth}p{0.25\textwidth}p{0.25\textwidth}p{0.25\textwidth}@{}}
 \hline
- & Centralized & Dual decomposition & ADMM \\
+ & Centralized & DD & ADMM \\
 \hline
 Information reaching the coordinator
 & cost functions and device constraints of all participants
@@ -210,7 +210,7 @@ The criteria used below are fixed before the studies are compared. \emph{Effecti
 
 The guarantee reported for a method depends on the model as much as on the algorithm, which the reviewed studies illustrate in opposite ways. Olivella-Rosell et al.\ solve each prosumer subproblem as a mixed-integer program, so that the exclusivity of charging and discharging is respected exactly, but the overall problem is nonconvex and the method is only expected to reach a feasible, generally suboptimal, portfolio \cite{OlivellaRosell2020}. Diekerhof instead replaces the nonconvex device models with convex approximations, which restores the convergence guarantee at the cost of model fidelity \cite{Diekerhof2018}. The two claims do not conflict: they hold under different premises, and comparing them by the label of the algorithm alone would be misleading. More decisive than the algorithm is therefore whether the discrete decisions are relaxed and whether the returned schedule is checked against them; the second of these is not reported in the reviewed studies, so the effectiveness of a method in a given setting cannot be inferred from the label attached to it.
 
-The penalty parameter of ADMM is in this respect less demanding than the step size of dual ascent, whose value has to be chosen for the problem at hand and whose subgradient iterates approach the optimum slowly: for a convex problem any $\rho>0$ converges, and $\rho$ affects only the rate, a large value bringing the copies into agreement quickly while slowing the multipliers and a small value doing the reverse \cite{Diekerhof2018}.
+The penalty parameter of ADMM is less demanding in this respect than the step size of dual ascent. That step size has to be chosen for the problem at hand, and because every dual update follows a subgradient direction, the iterates approach the optimum slowly. For a convex problem, by contrast, ADMM converges for any $\rho>0$, and $\rho$ affects only the rate: a large value brings the copies into agreement quickly while slowing the multipliers, and a small value does the reverse \cite{Diekerhof2018}.
 
 The three studies that report timings do not agree on which approach is faster. Lilla et al.\ solve a network of ten prosumers over one day: the decomposed model required about 60\,s in 13 iterations for the offer stage and 80\,s in 8 iterations for the delivery stage, whereas the centralized model needed about 1\,s per stage, and the authors state that the purpose is not computational performance but the reduction of shared information \cite{Lilla2020}. Diekerhof reports both signs within one thesis: for a 14-building district scheduled day by day, the distributed green-state coordination averaged 1716\,s over 4947 iterations, while the centralized solver, retained only for the red state, took 12.3\,s; enlarging the district to 10\,000 buildings in a single scenario instead, the distributed computation took about 80\,s and ran almost three times faster than the centralized benchmark, while across 27 stochastic scenarios the centralized benchmark was again significantly faster \cite{Diekerhof2018}. Olivella-Rosell et al., with 100 sites, report the decomposed solve finishing in under five minutes where the centralized one exhausted 16\,GB of memory and needed about an hour \cite{OlivellaRosell2020}. Participant count, horizon, treatment of uncertainty, and hardware differ across the three, so the figures cannot be ranked against one another, and each is meaningful only within the study that measured it.
 
@@ -225,7 +225,7 @@ The three studies that report timings do not agree on which approach is faster. 
 
 \section{Conclusion}
 
-Three findings organise the comparison. First, the reviewed formulations differ little in what they optimise and much in what they place inside a participant's feasible set: once the day-ahead problem is written in a common template, the centralized solve, dual decomposition, and ADMM appear as three answers to the same coupling constraint, differing in what crosses the boundary---every cost function for the first, a price for the second, a corrected copy for the third.
+Three findings organise the comparison. First, the reviewed formulations differ little in what they optimise and much in what they place inside a participant's feasible set: once the day-ahead problem is written in a common template, the centralized solve, DD, and ADMM appear as three answers to the same coupling constraint, differing in what crosses the boundary---every cost function for the first, a price for the second, a corrected copy for the third.
 
 Second, the reported timings do not settle which approach is faster. Lilla et al.\ give up two orders of magnitude in computation in order to reduce the information shared \cite{Lilla2020}; Olivella-Rosell et al.\ gain a factor of five to twelve at a hundred sites \cite{OlivellaRosell2020}; Diekerhof reports either sign depending on the number of scenarios resolved \cite{Diekerhof2018}.
 
