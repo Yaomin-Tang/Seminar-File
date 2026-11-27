@@ -1,0 +1,7 @@
+﻿# 只跟踪论文本身，其余文件（课程数据、PPT 脚本、venv 等）一律忽略。
+/*
+!/.gitignore
+!/Distributed*.tex
+!/IEEEtran.cls
+!/figures/
+!/refs.bib
